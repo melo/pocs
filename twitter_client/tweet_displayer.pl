@@ -4,28 +4,31 @@
 # 
 # Via http://gist.github.com/338258
 # 
-use strict;
+use perl5i::2;
 use AnyEvent::Twitter::Stream;
-use Encode;
+use autobox::Encode;
 use Markapl;
  
-my @buf;
+my $buf = [];
  
-my $stream = AnyEvent::Twitter::Stream->new(
+# NOTE: $stream should live outside this PSGI file scope
+# Change state to our if you're using perl 5.8
+state $stream = AnyEvent::Twitter::Stream->new(
     username => $ENV{TWITTER_USERNAME},
     password => $ENV{TWITTER_PASSWORD},
     method => 'sample',
     on_tweet => sub {
         my $tweet = shift;
-        unshift @buf, $tweet;
-        @buf = @buf[0..9] if @buf >= 10;
+        $buf->unshift($tweet);
+        $buf = $buf->slice(0..9) if $buf->size >= 10;
     },
 );
  
 sub {
-    $stream; # <- reference
-    my $mp = html { body { ul { map { li { $_->{text} } } @buf } } };
-    return [ 200, [ 'Content-Type', 'text/html' ], [ encode_utf8( $mp->() ) ] ];
+    my $mp = html { body { ul { $buf->map(sub { li { $_->{text} } }) } } };
+    return [
+        200, 
+        [ 'Content-Type', 'text/html; charset=utf-8' ], 
+        [ $mp->()->encode('utf8') ],
+    ];
 };
- 
- 
