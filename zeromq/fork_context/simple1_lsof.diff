@@ -1,0 +1,55 @@
+Initial FD's:
+
+COMMAND   PID USER   FD   TYPE DEVICE  SIZE/OFF    NODE NAME
+perl    65764 melo  cwd    DIR    1,1       272 5005484 /Users/melo/Dropbox/work/examples/zeromq/fork_context
+perl    65764 melo  txt    REG    1,1   1613072  980380 /Users/melo/perl5/perlbrew/perls/perl-5.14.2/bin/perl
+perl    65764 melo  txt    REG    1,1     47140 5018040 /Users/melo/perl5/perlbrew/perls/perl-5.14.2/lib/site_perl/5.14.2/darwin-2level/auto/ZMQ/LibZMQ2/LibZMQ2.bundle
+perl    65764 melo  txt    REG    1,1    249952 3303454 /Users/melo/.homebrew/Cellar/zeromq/2.2.0/lib/libzmq.1.dylib
+perl    65764 melo  txt    REG    1,1    600576 3435227 /usr/lib/dyld
+perl    65764 melo  txt    REG    1,1 301068288 3751261 /private/var/db/dyld/dyld_shared_cache_x86_64
+perl    65764 melo    0u   CHR   16,4     0t669    1707 /dev/ttys004
+perl    65764 melo    1u   CHR   16,4     0t669    1707 /dev/ttys004
+perl    65764 melo    2u   CHR   16,4     0t669    1707 /dev/ttys004
+
+zmq_init adds this ones:
+
+--- initial.lsof	2012-08-21 22:19:44.000000000 +0100
++++ ctx.lsof	2012-08-21 22:19:53.000000000 +0100
+@@ -1,10 +1,20 @@
+ COMMAND   PID USER   FD   TYPE DEVICE  SIZE/OFF    NODE NAME
++perl    65764 melo    3u    unix 0x77bbba67e868ce33       0t0         ->0x77bbba67edb7d9e3
++perl    65764 melo    4u    unix 0x77bbba67edb7d9e3       0t0         ->0x77bbba67e868ce33
++perl    65764 melo    5u    unix 0x77bbba67e860e473       0t0         ->0x77bbba67e99f2023
++perl    65764 melo    6u    unix 0x77bbba67e99f2023       0t0         ->0x77bbba67e860e473
++perl    65764 melo    7u  KQUEUE                                      count=0, state=0x2
++perl    65764 melo    8u    unix 0x77bbba67edb7fc43       0t0         ->0x77bbba67e868c72b
++perl    65764 melo    9u    unix 0x77bbba67e868c72b       0t0         ->0x77bbba67edb7fc43
++perl    65764 melo   10u  KQUEUE                                      count=0, state=0x2
++perl    65764 melo   11u    unix 0x77bbba67e868cefb       0t0         ->0x77bbba67edb7f3ab
++perl    65764 melo   12u    unix 0x77bbba67edb7f3ab       0t0         ->0x77bbba67e868cefb
+
+
+All of them survive in the child:
+
+--- ctx.lsof	2012-08-21 22:19:53.000000000 +0100
++++ child.lsof	2012-08-21 22:20:24.000000000 +0100
+@@ -1,20 +1,18 @@
+ COMMAND   PID USER   FD     TYPE             DEVICE  SIZE/OFF    NODE NAME
+-perl    65764 melo    3u    unix 0x77bbba67e868ce33       0t0         ->0x77bbba67edb7d9e3
+-perl    65764 melo    4u    unix 0x77bbba67edb7d9e3       0t0         ->0x77bbba67e868ce33
+-perl    65764 melo    5u    unix 0x77bbba67e860e473       0t0         ->0x77bbba67e99f2023
+-perl    65764 melo    6u    unix 0x77bbba67e99f2023       0t0         ->0x77bbba67e860e473
+-perl    65764 melo    7u  KQUEUE                                      count=0, state=0x2
+-perl    65764 melo    8u    unix 0x77bbba67edb7fc43       0t0         ->0x77bbba67e868c72b
+-perl    65764 melo    9u    unix 0x77bbba67e868c72b       0t0         ->0x77bbba67edb7fc43
+-perl    65764 melo   10u  KQUEUE                                      count=0, state=0x2
+-perl    65764 melo   11u    unix 0x77bbba67e868cefb       0t0         ->0x77bbba67edb7f3ab
+-perl    65764 melo   12u    unix 0x77bbba67edb7f3ab       0t0         ->0x77bbba67e868cefb
++perl    65815 melo    3u  unix 0x77bbba67e868ce33       0t0         ->0x77bbba67edb7d9e3
++perl    65815 melo    4u  unix 0x77bbba67edb7d9e3       0t0         ->0x77bbba67e868ce33
++perl    65815 melo    5u  unix 0x77bbba67e860e473       0t0         ->0x77bbba67e99f2023
++perl    65815 melo    6u  unix 0x77bbba67e99f2023       0t0         ->0x77bbba67e860e473
++perl    65815 melo    8u  unix 0x77bbba67edb7fc43       0t0         ->0x77bbba67e868c72b
++perl    65815 melo    9u  unix 0x77bbba67e868c72b       0t0         ->0x77bbba67edb7fc43
++perl    65815 melo   11u  unix 0x77bbba67e868cefb       0t0         ->0x77bbba67edb7f3ab
++perl    65815 melo   12u  unix 0x77bbba67edb7f3ab       0t0         ->0x77bbba67e868cefb
