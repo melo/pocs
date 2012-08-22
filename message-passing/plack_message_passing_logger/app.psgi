@@ -43,6 +43,7 @@ unless ($ENV{SKIP_BOOM}) {
     $ctx = zmq_init(1);
     $log_zq = zmq_socket($ctx, ZMQ_PUB);
     zmq_connect($log_zq, 'tcp://127.0.0.1:5552');
+    zmq_setsockopt($log_zq, ZMQ_LINGER, 0);
   };
   $cb->();
   register_pid_change_callback($cb);
