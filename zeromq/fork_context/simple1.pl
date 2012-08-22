@@ -3,10 +3,10 @@
 use v5.14;
 use warnings;
 use ZMQ::LibZMQ2;
+use ZMQ::Constants ':v2.1.11', ':all';
 
-say "Check lsof of $$ - before context"; <>;
 my $ctx = zmq_init(1);
-say "Check lsof of $$ - before fork"; <>;
+my $sock = zmq_socket($ctx, ZMQ_PUB);
+#my $msg = zmq_msg_init_data('hello');
 my $pid = fork();
-say "Check lsof of $$ - before death"; <>;
 waitpid($pid, 0) if $pid;
