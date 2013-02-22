@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>POC: browser history per tab</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  </head>
+  <body>
+    <h3>Navigate using...</h3>
+    <ul>
+      <li><a href="history.html">no title, no history update</a></li>
+      <li><a href="history.html?title=aaa">aaa</a></li>
+      <li><a href="history.html?title=bbb">bbb</a></li>
+      <li><a href="history.html?title=ccc">ccc</a></li>
+      <li><a href="history.html?title=ddd">ddd</a></li>
+      <li><a href="history.html?title=eee">eee</a></li>
+    </ul>
+    <script type="text/javascript" charset="utf-8">
+      /* Helper to get a value from the query string */
+      function url_param(p) {
+          var u = window.location.search.substring(1);
+          var up = u.split('&');
+          for (var i = 0; i < up.length; i++) {
+              var n = up[i].split('=');
+              if (n[0] == p) {
+                  return n[1];
+              }
+          }
+      }
+
+      $(function () {
+        /* if we have a title param, update our doc title, signal a history change */
+        var title = url_param('title');
+        var has_title = false;
+        if (typeof title == 'string' && title.length > 0) {
+          document.title = title + ": " + document.title;
+          has_title = true;
+        }
+
+        /* Keep track of our history if sessionStorage is available */
+        var cur_history;
+        if (typeof sessionStorage == 'object') {
+          var prev_history = sessionStorage.getItem('history');
+          if (typeof prev_history == 'string') {
+            cur_history = JSON.parse(prev_history);
+          }
+          else {
+            cur_history = [];
+          }
+
+          /* history needs updating? */
+          if (has_title) {
+            var new_item = {
+              title: title,
+              href: window.location.href
+            };
+
+            /* don't push duplicate tail items, we still allow duplicates on other positions */
+            var hist_len = cur_history.length;
+            if (hist_len > 0) {
+              var last = cur_history[hist_len-1];
+              if (last.title == new_item.title && last.href == new_item.href) {
+                has_title = false;
+              }
+            }
+          }
+
+          /* update history if we need to: keep only last 5 items */
+          if (has_title) {
+            cur_history.push(new_item);
+            if (cur_history.length > 5) {
+              cur_history.splice(0, cur_history.length-5);
+            }
+            sessionStorage.setItem('history', JSON.stringify(cur_history));
+          }
+        }
+
+        /* show our history if we have it */
+        if (cur_history.length) {
+          var html = '<div style="border: 1px solid #f0f; margin: 1em; padding: .75em"><p>Recently visited ';
+          for (var i = 0; i < cur_history.length; i++) {
+            html = html + '&lt;&lt; <a href="'+cur_history[i].href+'">'+cur_history[i].title+'</a> ';
+          }
+          html = html + '</p></div>';
+          $(html).insertBefore('h3');
+        }
+      });
+    </script>
+  </body>
+</html>
