@@ -1,0 +1,3 @@
+title.mi component is <% $self %>.
+title.mi title is '<% $self->title // '<undef>' %>'.
+title.mi  page title is '<% $m->page->title // '<undef>' %>'.
