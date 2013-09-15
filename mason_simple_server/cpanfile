@@ -1,0 +1,5 @@
+requires 'Mason',                     '0';
+requires 'Plack::Builder',            '0';
+requires 'Plack::Request',            '0';
+requires 'Plack::Response',           '0';
+requires 'Plack::Middleware::Static', '0';
