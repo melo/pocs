@@ -2,9 +2,10 @@
 
 use strict;
 use warnings;
-use 5.12;
+use 5.012;
 use AnyEvent;
 use AnyEvent::MP;
+use AnyEvent::MP::Global;
 use List::Util
 
 configure;

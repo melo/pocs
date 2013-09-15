@@ -2,16 +2,18 @@
 
 use strict;
 use warnings;
-use 5.12;
+use 5.012;
 use AnyEvent;
 use AnyEvent::MP;
+use AnyEvent::MP::Global;
+use List::Util 'shuffle';
 
 configure;
 
 my $port = port;
 grp_reg my_workers => $port;
 
-recv $port, work_upcase => sub {
+rcv $port, work_upcase => sub {
   my ($data, $reply_port) = @_;
 
   $data = uc($data);
@@ -21,7 +23,8 @@ recv $port, work_upcase => sub {
 };
 
 my $timer;
-$timer = AE::timer after => 0, interval => 1, sub {
+$timer = AE::timer 0, 1, sub {
+  say "[$$] Try and get the ctrls group";
   my $grp_ports = grp_get 'my_ctrls' or return;
   
   my $ctrl_port = pick($grp_ports);
@@ -31,7 +34,7 @@ $timer = AE::timer after => 0, interval => 1, sub {
   undef $timer; ## no more
 };
 
-say "[$$] Worker started";
+say "[$$] Worker started at port '$port'";
 AE::cv->recv;
 
 sub pick {

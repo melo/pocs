@@ -18,3 +18,4 @@ bind) and use device nodes to design your topology.
  4. watch as messages start flowing to subscribers. The publisher
     will stack the connects so every 7 messages a new subscriber will
     come alive.
+
